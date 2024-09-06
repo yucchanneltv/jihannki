@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Red Bull 自販機</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #c3a0a0;
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #e40000;
+        }
+        .machine {
+            width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+        .machine img {
+            width: 150px;
+        }
+        button {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 15px;
+            font-size: 18px;
+            color: #fff;
+            background-color: #e40000;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #ff4d4d;
+        }
+        #status {
+            font-size: 24px;
+            color: #ffffff;
+        }
+        
+        /* モーダルのスタイル */
+        .modal {
+            display: none; /* 最初は非表示 */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4); /* 半透明の背景 */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .modal-content img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="machine">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAeFBMVEX///8AAAD+/v6pqanh4eHMzMzx8fE7Ozufn5+6urr29vbZ2dn5+fnPz8/r6+unp6ePj48WFhbAwMAhISGwsLC5ubmIiIh8fHxNTU2Dg4MuLi5fX184ODgzMzNRUVFmZmZzc3NjY2OYmJhFRUUMDAwaGhpubm4nJyfVilMsAAAIvUlEQVR4nO2d6ULbMBCEFZWrIQQClKOlhVLavv8blkSH5diJZelbyymeH1SkZLUTbTQ6VrJSDegWKPdjZ6FpJxna/aAKLQzX/7Hx3RRiADLEse2drv0Tz5FBWC9TUI2GTPQM8or9vHRLcLW1mKe9v4BAnmErB1/x7gLFsAwSP6oDwsRw3Axb+ppGRxJvidBoGm0M7T++IFHvcODacKw4cPcjMDHsZ+kwehplv35BIdKUH52mFwQ4to7bVNLnSjAUwMjaUADNAYlvPf9bje3OQuwUZH9BguG23XaGUYXaOCGtANNTbQyVaxZf0HZFo6swzjZshmmzEz98NBluB99Bo/k91D7kDn9QqiyNjliMGY5EdLaxHTIN3R2JOqLQ+RHEFaT60u6/qdppR2G8bbhH8fsVRqsWk+K7j3ZS/HGjtOLLRag1PwLFn59osXAZg+KfPM9msysl9j0srvj672yNeyWj+FEMG3HbVkjuQm9nBueCim83DVVQcQi+1hoeLMNPMuYdh4rM0AyPLMHZrYx9F2bbkTYUQ60uHcMjoRoCGmXa8Jcl+EvIfnGG564JL4UqqDEpwfDMMVwKVRBy8AN9VSvIMvwuHKSq2UzDMjySDtLibfgqHaQ1PSzxPXyyBH+I1RAyLNCX+p5UaECjiiv+lWN4IlZFSKMAw6+W4De5KsoyvBAek65RYzI4wzvHcCFXR8hheLWY+SCVq6TZTAMyHCJIy7bho2M4F6uirOLrlSX4LFXDppaA4dB9qQ/SL1I1rFFS8e+HCNKSerhwQfoiOrgvyPDYNeG1UAUGNSbDMnxxDIXsW4QchlWLhSN4L2PfodlMQzEcKEgLtuEfS3AlOCZdwzEc+Huo1clAQVpO8a8dwwsR8xWKKf6zJXgjHKTF9HDpmvBRwnqIUgy/OIbnEtZD1JgMyPCbJfgmYbyGkMOAauF70jsB43U0m2kAhtrvbMsHabXLvam4+jYq2TZ0QfpVegt9B7T74QswljuDtJmO4V9JK5hfBscnx3DfzjbnV56lpK72hyV42mk9wTiNdx+OP/WE3/f9drvvz445F7PefeLyYXg8MPs1LQx79TRyBN8pijBsqMV+nHf7mYHz6pPWaYU2xv0YfhZl+DnCg05ktuGG4e0Rj9uQofckrdBOOvJ7uGEoMYu9sAyLK/6GIdWvhzjGovQDMMzDATDMHBiJfw/zkan4G4Z3fcdtEdjs8SP7bplq4VcFRXA9AsVfdruZASTbLbMNq31OAdxX8rbt7XCKH6QX4ng11Zef4y8WZn5xdnFM4MJMHx8W2Go4MI82+0hUwoFZLf4DWWNgsrcukUUHdz6BW0klvDI+PUIMH+3nRSF3jr+GEUUmO03bxVRuazhXLdYwE/3OlbNInG6suel9ccXfwGxD/GU6v4U5rcdlDRNtOJ+BTtldm3noW1nFX/+JyWZmzmaZIxh+R2MMiq/ckiIzTTRpKMxCogHB8CfV/WnXMf/Mt4XCSNgZYusMFNcNEENm9H1FmLJnMF5FGfbuaeyeLpP8Y6ZjYOo3oRY23Zc5YWcOlV6oUSm+7eGBxIr3Kt+s8ohFaRJDbVQaGZcGpsaj+O5sCLGsYhd+fL0jUXx140bL2TCj+BvAkgfC8IeV/GZGVU9YwZc7cZkKn7QN4QX0jemyrrqd7gVm8GCAKH6VIQOBPDWLqAW+uH/tXBuL4uMJC2RGH9OG9PbFsu7bCBR/vur2ugdW89Epvj+VzeAr4pMDw/BXt9s9IHYPSAaeu93uAfRUKTRJuet2uwfQ9G9G8aubdBAwKz4hnfD3JLWoDlAg+OI/4NEofnXYDgGaoAO14VG32z1wtOXbCBTfbV1ACDYtRqP4ixuQIHygDZILMhua3LSgoFHJf+aWEhXVhBrNHLqXZpjS06CJQ68YuzYCiWpRHUcDcJst9AKKj65jsEf0qTYk1zHOrVejUnx0HWOZLfS84uvqWisAmEh75xC8YQTljz+ngRvUwEMaLB44yYevyqAUH9y6IDctWgikqkV1bXU2LlX1AY9I8UHJv5btSrXj7wqxtXHrGH4Ng1B87R7EHUljD7h1DPR2dhO0CMOTbtcjgV5IqzXG0Ga+5gPKxLXQwR1DuTiFGFLZ1AYcQ+2v88gFe6mw6zMJho/dzkcBTLxUHMP1+ynJZy+g14H+54LaumCvM+Wi1KVgvp2mw0zA2DO3lB6uhz5G8r9nWDGPgmAfxwIqvl3HWKXfKGvTHdjHJICK7y6VXSaGvHYfEbxpASq+fsoMMhPmT+jEAmVoJT+9ozBdFfwUAbIvtSmY6Vn2Ztn8hXClAqn4/qTE5oWEKTl5aiP0DFN83wapPc2LgOCzUWpm+WECc7+1d5NKDV8jQiq+3br4G7zSr2AmmPBViqTiu1l+si3zdviRM6Tiuyu6Uwc1Np0DvnYX1UO1ypJ8I/grxJMKLMPTLMk3gs+uYcB9aeZJeneqnwWp+NrfHqFSFN/fFgGPS0HF1/6AaxrIo7YVyCjV9orB5/ClHgWTc0RfYIYqvpX8h+CVPoUHCcFHFV9vXxbQ8+3ktQWBWVLx3aAmbVSS9ebdYPXQpmCmLbSYALhhe1KaYXXxSgLYK2A8WMXPknwZwYcV369jaP9K7G67llnDgOf4OTc+CK1h4FG6vY4Rr/g6ex1rB1jFD++W6Z1fR95xU/OM1MOsrQuJTQtFK76dpv9OmeXPf2ctEOwErIeLt2TJN5sWb/ijg2CG9inUKZJvBP8J8qMC3JdmLHk2F1sZsIqv7S2YL2f9YcSCv/GSVXydfZSUf3YQGqU6/ygpvYaBK352Cib/MERY8bNPXfB3n7OKr7NPXbBZChufUD18t3SSB3ixVPGKPz7Qij8+wHN8idT6fM/IOf4IQSs+UkBBK35ugQet+OMDPMcfIT6AHv7/DCfFj7czKX4hTIofb2dS/FKYFP/w8QEYToofb2dS/EKYFD/ezqT4pTAp/uHjAzCcFD/ezqT4hfDfR+k/4RpbteTYfC8AAAAASUVORK5CYII=" alt="Red Bull">
+        <h1>自販機</h1>
+        <p id="status">サーボモーターに接続してください</p>
+        <button id="connect">接続</button>
+        <button id="buy" disabled>飲み物を購入</button>
+    </div>
+
+    <!-- モーダル -->
+    <div id="advertisementModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeAdButton">&times;</span>
+<!-- MAF Rakuten Widget FROM HERE -->
+<script type="text/javascript">MafRakutenWidgetParam=function() { return{ size:'336x280',design:'text',recommend:'on',auto_mode:'on',a_id:'4156930', border:'off'};};</script><script type="text/javascript" src="//image.moshimo.com/static/publish/af/rakuten/widget.js"></script>
+<!-- MAF Rakuten Widget TO HERE -->
+        </div>
+    </div>
+
+    <script>
+        let port;
+        let writer;
+        let connected = false;
+
+        const statusText = document.getElementById('status');
+        const connectButton = document.getElementById('connect');
+        const buyButton = document.getElementById('buy');
+        const advertisementModal = document.getElementById('advertisementModal');
+        const closeAdButton = document.getElementById('closeAdButton');
+
+        // シリアルポートに接続する関数
+        async function connectToSerial() {
+            try {
+                port = await navigator.serial.requestPort();
+                await port.open({ baudRate: 9600 });
+                writer = port.writable.getWriter();
+                connected = true;
+                statusText.textContent = "サーボモーターに接続しました！";
+                buyButton.disabled = false;  // 購入ボタンを有効にする
+            } catch (error) {
+                console.error('接続失敗:', error);
+                statusText.textContent = "接続に失敗しました。もう一度お試しください。";
+            }
+        }
+
+        // シリアルポートにデータを送信する関数
+        async function sendToSerial(data) {
+            if (writer) {
+                await writer.write(new TextEncoder().encode(data));
+            }
+        }
+
+        // モーダルを表示する関数
+        function showAdvertisement() {
+            advertisementModal.style.display = 'flex';
+        }
+
+        // モーダルを閉じる関数
+        function closeAdvertisement() {
+            advertisementModal.style.display = 'none';
+        }
+
+        // 「接続」ボタンのイベントリスナー
+        connectButton.addEventListener('click', connectToSerial);
+
+        // 「購入」ボタンのイベントリスナー
+        buyButton.addEventListener('click', async () => {
+            if (connected) {
+                showAdvertisement(); // モーダルを表示
+            }
+        });
+
+        // 「広告を閉じる」ボタンのイベントリスナー
+        closeAdButton.addEventListener('click', async () => {
+            closeAdvertisement();
+            statusText.textContent = "Red Bullを購入中...";
+            await sendToSerial('1');  // サーボモーターを90度に設定
+            setTimeout(async () => {
+                await sendToSerial('0');  // 2秒後に元に戻す
+                statusText.textContent = "Red Bullが出ました！";
+            }, 2000);
+        });
+
+        // モーダルの外をクリックしてもモーダルを閉じる
+        window.addEventListener('click', (event) => {
+            if (event.target === advertisementModal) {
+                closeAdvertisement();
+            }
+        });
+    </script>
+</body>
+</html>
